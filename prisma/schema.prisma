@@ -1,0 +1,164 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Role {
+  id   Int    @id @default(autoincrement())
+  role String @unique @db.VarChar(40)
+
+  users User[]
+}
+
+model User {
+  id           String   @id @default(uuid()) @db.Uuid
+  email        String   @unique @db.VarChar(254)
+  password     String   @db.VarChar(255)
+  refreshToken String?
+  firstName    String   @db.VarChar(100)
+  lastName     String   @db.VarChar(100)
+  phone        String   @unique
+  createdAt    DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime @updatedAt @db.Timestamptz(3)
+
+  roleId Int
+  role   Role @relation(fields: [roleId], references: [id])
+
+  oders OrderHeader[]
+  cart  Cart?
+  likes Like[]
+}
+
+model Product {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @db.VarChar(100)
+  description String?
+  stock       Int
+  price       Decimal  @db.Decimal(10, 2)
+  isActive    Boolean? @default(true)
+
+  images       ProductImage[]
+  categories   Category[]
+  orderDetails OrderDetail[]
+  cartItems    CartItem[]
+  likes        Like[]
+}
+
+model ProductImage {
+  id  Int    @id @default(autoincrement())
+  url String
+
+  productId String  @db.Uuid
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+model Category {
+  id   Int    @id @default(autoincrement())
+  name String @unique @db.VarChar(100)
+
+  products Product[]
+}
+
+enum OrderStatus {
+  PENDING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+model OrderHeader {
+  id        String      @id @default(uuid()) @db.Uuid
+  status    OrderStatus @default(PENDING)
+  shipDate  DateTime?   @db.Date
+  createdAt DateTime    @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime    @updatedAt @db.Timestamptz(3)
+
+  customerId String @db.Uuid
+  customer   User   @relation(fields: [customerId], references: [id])
+
+  payment Payment? // Why does this have to be optional?
+
+  details OrderDetail[]
+}
+
+model OrderDetail {
+  productId String @db.Uuid
+  orderId   String @db.Uuid
+
+  unitPrice Decimal @db.Decimal(10, 2)
+  quantity  Int
+
+  product Product     @relation(fields: [productId], references: [id])
+  order   OrderHeader @relation(fields: [orderId], references: [id])
+
+  @@id([productId, orderId])
+}
+
+model Payment {
+  id            String   @id @default(uuid()) @db.Uuid
+  amountInCents Int // Should this be "amount in decimal" or "amountInCents in Integer"
+  currency      String   @db.Char(3)
+  createdAt     DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime @updatedAt @db.Timestamptz(3)
+
+  orderId String      @unique @db.Uuid
+  order   OrderHeader @relation(fields: [orderId], references: [id])
+
+  paymentIntents PaymentIntent[]
+}
+
+enum PaymentIntentStatus {
+  PENDING
+  SUCCESSFUL
+  FAILED
+}
+
+model PaymentIntent {
+  id              String              @id @default(uuid()) @db.Uuid
+  stripePaymentId String              @unique
+  status          PaymentIntentStatus @default(PENDING)
+  statusInfo      String?
+  createdAt       DateTime            @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime            @updatedAt @db.Timestamptz(3)
+
+  paymentId String  @db.Uuid
+  payment   Payment @relation(fields: [paymentId], references: [id])
+}
+
+model Cart {
+  id        String   @id @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  userId String @unique @db.Uuid
+  user   User   @relation(fields: [userId], references: [id])
+
+  items CartItem[]
+}
+
+model CartItem {
+  cartId    String @db.Uuid
+  productId String @db.Uuid
+
+  quantity Int
+
+  cart    Cart    @relation(fields: [cartId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+
+  @@id([cartId, productId])
+}
+
+model Like {
+  userId    String @db.Uuid
+  productId String @db.Uuid
+
+  likedAt DateTime @default(now()) @db.Timestamptz(3)
+
+  user    User    @relation(fields: [userId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+
+  @@id([userId, productId])
+}
