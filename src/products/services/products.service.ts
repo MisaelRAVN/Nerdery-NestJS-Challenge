@@ -5,10 +5,10 @@ import {
 } from '@nestjs/common';
 import { CreateProductInput } from '../dto/create-product.input';
 import { UpdateProductInput } from '../dto/update-product.input';
-import { PrismaService } from 'src/common/prisma/prisma.service';
+import { PrismaService } from '../../common/prisma/prisma.service';
 import { Prisma } from '@prisma/client';
-import { UserPayload } from 'src/auth/entities/user-payload.entity';
-import { Role } from 'src/auth/enums/role.enum';
+import { UserPayload } from '../../auth/entities/user-payload.entity';
+import { Role } from '../../auth/enums/role.enum';
 import { BuildProductFiltersType } from '../types/build-product-filter.type';
 
 @Injectable()
@@ -100,15 +100,6 @@ export class ProductsService {
   }
 
   async attachImage(productId: string, imageUrl: string) {
-    /*
-    await this.prismaService.productImage.create({
-      data: {
-        url: imageUrl,
-        productId,
-      },
-    });
-    return this.findOne(productId);
-    */
     return this.prismaService.product.update({
       where: { id: productId },
       data: {

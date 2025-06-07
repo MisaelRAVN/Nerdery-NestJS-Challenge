@@ -3,9 +3,9 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { ClientPayload } from 'src/auth/entities/client-payload.entity';
-import { PrismaService } from 'src/common/prisma/prisma.service';
-import { ProductsService } from 'src/products/services/products.service';
+import { ClientPayload } from '../../auth/entities/client-payload.entity';
+import { PrismaService } from '../../common/prisma/prisma.service';
+import { ProductsService } from '../../products/services/products.service';
 
 @Injectable()
 export class CartService {
@@ -66,7 +66,11 @@ export class CartService {
     const product = await this.prisma.product.findUnique({
       where: { id: productId, isActive: true },
     });
-    if (!product) throw new NotFoundException();
+    if (!product) {
+      throw new NotFoundException('No such active product could be found', {
+        description: 'No active product with given id was found',
+      });
+    }
 
     try {
       await this.prisma.cartItem.delete({

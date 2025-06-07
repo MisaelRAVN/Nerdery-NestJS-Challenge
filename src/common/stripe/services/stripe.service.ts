@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Stripe from 'stripe';
 import { StripeMetadataPayload } from '../types/stripe-metadata-payload';
@@ -28,21 +28,17 @@ export class StripeService {
   }
 
   constructEvent(rawBody: Buffer<ArrayBufferLike>, stripeSignature: string) {
-    const event = this.stripe.webhooks.constructEvent(
-      rawBody,
-      stripeSignature,
-      this.configService.get<string>('STRIPE_WEBHOOK_SECRET') ?? '',
-    );
-    return event;
-  }
-
-  async getProducts(): Promise<Stripe.Product[]> {
-    const products = await this.stripe.products.list();
-    return products.data;
-  }
-
-  async getCustomers() {
-    const customers = await this.stripe.customers.list({});
-    return customers.data;
+    try {
+      const event = this.stripe.webhooks.constructEvent(
+        rawBody,
+        stripeSignature,
+        this.configService.getOrThrow<string>('STRIPE_WEBHOOK_SECRET'),
+      );
+      return event;
+    } catch (error) {
+      throw new UnauthorizedException('Stripe Signature is not valid', {
+        cause: error,
+      });
+    }
   }
 }

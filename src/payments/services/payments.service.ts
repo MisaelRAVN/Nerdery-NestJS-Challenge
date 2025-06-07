@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/common/prisma/prisma.service';
-import { StripeService } from 'src/common/stripe/services/stripe.service';
+import { PrismaService } from '../../common/prisma/prisma.service';
+import { StripeService } from '../../common/stripe/services/stripe.service';
 import { PaymentIntentStatus } from '@prisma/client';
-import { OrdersService } from 'src/orders/services/orders.service';
-import { ClientPayload } from 'src/auth/entities/client-payload.entity';
-import { StripePaymentIntent } from 'src/common/stripe/types/stripe-payment-intent.type';
+import { OrdersService } from '../../orders/services/orders.service';
+import { ClientPayload } from '../../auth/entities/client-payload.entity';
+import { StripePaymentIntent } from '../../common/stripe/types/stripe-payment-intent.type';
 
 @Injectable()
 export class PaymentsService {
