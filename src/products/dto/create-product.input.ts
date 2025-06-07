@@ -1,6 +1,5 @@
 import { InputType, Int, Field, Float } from '@nestjs/graphql';
 import {
-  IsDecimal,
   IsNotEmpty,
   IsNumber,
   IsPositive,
@@ -16,7 +15,6 @@ export class CreateProductInput {
   @Field()
   name: string;
 
-  @IsDecimal({ decimal_digits: '2' })
   @IsPositive()
   @Field(() => Float)
   price: number;

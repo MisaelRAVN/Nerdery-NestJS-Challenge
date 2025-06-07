@@ -17,6 +17,7 @@ import { ClientPayload } from 'src/auth/entities/client-payload.entity';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/auth/enums/role.enum';
 import { AccessTokenGuard } from 'src/auth/guards/access-token.guard';
+import { StripePaymentIntent } from 'src/common/stripe/types/stripe-payment-intent.type';
 
 @Controller()
 export class PaymentsController {
@@ -42,15 +43,22 @@ export class PaymentsController {
     const rawBody = req.rawBody;
     if (!rawBody) throw new BadRequestException('A raw body must be provided');
     const event = this.stripeService.constructEvent(rawBody, stripeSignature);
+    console.log(event.data.object);
     switch (event.type) {
       case 'payment_intent.succeeded':
-        await this.paymentsService.completePayment(event.data.object);
+        await this.paymentsService.completePayment(
+          event.data.object as StripePaymentIntent,
+        );
         break;
       case 'payment_intent.payment_failed':
-        await this.paymentsService.failPayment(event.data.object);
+        await this.paymentsService.failPayment(
+          event.data.object as StripePaymentIntent,
+        );
         break;
       case 'payment_intent.canceled':
-        await this.paymentsService.cancelPayment(event.data.object);
+        await this.paymentsService.cancelPayment(
+          event.data.object as StripePaymentIntent,
+        );
         break;
       default:
         break;

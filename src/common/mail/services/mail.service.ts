@@ -1,12 +1,21 @@
 import { ISendMailOptions, MailerService } from '@nestjs-modules/mailer';
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 
 @Injectable()
 export class MailService {
   constructor(private mailerService: MailerService) {}
 
   async sendMail(sendOptions: ISendMailOptions) {
-    await this.mailerService.sendMail(sendOptions);
+    try {
+      await this.mailerService.sendMail(sendOptions);
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Server could not communicate with mailer service',
+        {
+          cause: error,
+        },
+      );
+    }
   }
 
   async sendPasswordResetMail(receiptEmail: string, resetPasswordUrl: string) {

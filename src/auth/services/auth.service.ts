@@ -4,13 +4,13 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { UsersService } from 'src/users/services/users.service';
+import { UsersService } from '../../users/services/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { SignUpDto } from '../dto/signup-auth.dto';
 import { ConfigService } from '@nestjs/config';
 import { UserPayload } from '../entities/user-payload.entity';
 import { Role } from '../enums/role.enum';
-import { MailService } from 'src/common/mail/services/mail.service';
+import { MailService } from '../../common/mail/services/mail.service';
 
 @Injectable()
 export class AuthService {

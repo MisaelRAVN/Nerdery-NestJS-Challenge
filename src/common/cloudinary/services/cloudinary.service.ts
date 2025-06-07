@@ -8,16 +8,18 @@ export class CloudinaryService {
 
   generateUploadPayload() {
     const timestamp = Date.now();
-    const apiSecret =
-      this.configService.get<string>('CLOUDINARY_API_SECRET') ?? '';
+    const apiSecret = this.configService.getOrThrow<string>(
+      'CLOUDINARY_API_SECRET',
+    );
     const signature = cloudinary.utils.api_sign_request(
       { timestamp },
       apiSecret,
     );
 
-    const cloudName =
-      this.configService.get<string>('CLOUDINARY_CLOUD_NAME') ?? '';
-    const apiKey = this.configService.get<string>('CLOUDINARY_API_KEY') ?? '';
+    const cloudName = this.configService.getOrThrow<string>(
+      'CLOUDINARY_CLOUD_NAME',
+    );
+    const apiKey = this.configService.getOrThrow<string>('CLOUDINARY_API_KEY');
     return {
       uploadUrl: `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
       apiKey,

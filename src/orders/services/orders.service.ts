@@ -6,18 +6,17 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { OrderStatus, Prisma } from '@prisma/client';
-import { ClientPayload } from 'src/auth/entities/client-payload.entity';
-import { UserPayload } from 'src/auth/entities/user-payload.entity';
-import { Role } from 'src/auth/enums/role.enum';
-import { CartService } from 'src/cart/services/cart.service';
-import { PrismaService } from 'src/common/prisma/prisma.service';
+import { ClientPayload } from '../../auth/entities/client-payload.entity';
+import { UserPayload } from '../../auth/entities/user-payload.entity';
+import { Role } from '../../auth/enums/role.enum';
+import { CartService } from '../../cart/services/cart.service';
+import { PrismaService } from '../../common/prisma/prisma.service';
 
 @Injectable()
 export class OrdersService {
   constructor(
     private prismaService: PrismaService,
     private cartService: CartService,
-    //private paymentsService: PaymentsService,
   ) {}
 
   async create(user: ClientPayload) {
