@@ -1,4 +1,10 @@
-import { Field, ID, ObjectType, registerEnumType } from '@nestjs/graphql';
+import {
+  Field,
+  GraphQLISODateTime,
+  ID,
+  ObjectType,
+  registerEnumType,
+} from '@nestjs/graphql';
 import { OrderDetail } from './order-detail.entity';
 import { Payment } from 'src/payments/entities/payment.entity';
 import { OrderStatus } from '@prisma/client';
@@ -16,11 +22,11 @@ export class Order {
   @Field({ nullable: true })
   shipDate?: string;
 
-  @Field()
-  createdAt: string;
+  @Field(() => GraphQLISODateTime)
+  createdAt: Date;
 
-  @Field()
-  updatedAt: string;
+  @Field(() => GraphQLISODateTime)
+  updatedAt: Date;
 
   @Field(() => [OrderDetail])
   details: OrderDetail[];

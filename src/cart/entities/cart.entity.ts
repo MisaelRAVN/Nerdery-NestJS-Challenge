@@ -1,4 +1,4 @@
-import { ObjectType, Field, ID } from '@nestjs/graphql';
+import { ObjectType, Field, ID, GraphQLISODateTime } from '@nestjs/graphql';
 import { CartItem } from './cart-item.entity';
 
 @ObjectType()
@@ -9,6 +9,6 @@ export class Cart {
   @Field(() => [CartItem])
   items: CartItem[];
 
-  @Field()
-  createdAt: string;
+  @Field(() => GraphQLISODateTime)
+  createdAt: Date;
 }

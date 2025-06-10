@@ -1,4 +1,10 @@
-import { Field, ID, ObjectType, registerEnumType } from '@nestjs/graphql';
+import {
+  Field,
+  GraphQLISODateTime,
+  ID,
+  ObjectType,
+  registerEnumType,
+} from '@nestjs/graphql';
 import { PaymentIntentStatus } from '@prisma/client';
 
 registerEnumType(PaymentIntentStatus, { name: 'PaymentIntentStatus' });
@@ -17,9 +23,9 @@ export class PaymentIntent {
   @Field({ nullable: true })
   statusInfo?: string;
 
-  @Field()
-  createdAt: string;
+  @Field(() => GraphQLISODateTime)
+  createdAt: Date;
 
-  @Field()
-  updatedAt: string;
+  @Field(() => GraphQLISODateTime)
+  updatedAt: Date;
 }
