@@ -71,7 +71,7 @@ export class AuthService {
     const user = await this.usersService.findByEmail(email);
     if (user) {
       const token = this.jwtService.sign(
-        { userId: user.id, email },
+        { id: user.id, email, role: user.role.role as Role },
         {
           expiresIn: this.configService.get<string>(
             'PASSWORD_RESET_TOKEN_EXPIRES_IN',
@@ -92,22 +92,8 @@ export class AuthService {
     };
   }
 
-  async resetPassword(token: string, newPassword: string) {
-    let payload: any;
-    try {
-      const resetSecret =
-        this.configService.get<string>('PASSWORD_RESET_TOKEN_SECRET') ?? '';
-      payload = this.jwtService.verify(token, { secret: resetSecret });
-    } catch (error) {
-      throw new UnauthorizedException(error);
-    }
-
-    // TODO: This check might be handled internally by users service
-    const user = await this.usersService.findById(payload.userId);
-    if (!user) throw new NotFoundException();
-
-    await this.usersService.updatePassword(payload.userId, newPassword);
-
+  async resetPassword(userId: string, newPassword: string) {
+    await this.usersService.updatePassword(userId, newPassword);
     return { message: 'Password reset was successful' };
   }
 

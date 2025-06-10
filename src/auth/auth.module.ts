@@ -7,6 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { MailModule } from 'src/common/mail/mail.module';
 import { AccessTokenStrategy } from './strategies/access-token.strategy';
 import { RefreshTokenStrategy } from './strategies/refresh-token.strategy';
+import { ResetPasswordTokenStrategy } from './strategies/reset-password-token.strategy';
 
 @Module({
   imports: [UsersModule, PassportModule, MailModule],
@@ -16,6 +17,7 @@ import { RefreshTokenStrategy } from './strategies/refresh-token.strategy';
     JwtService,
     AccessTokenStrategy,
     RefreshTokenStrategy,
+    ResetPasswordTokenStrategy,
   ],
 })
 export class AuthModule {}

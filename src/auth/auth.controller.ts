@@ -17,6 +17,7 @@ import { CurrentUser } from './decorators/current-user.decorator';
 import { UserWithRefreshTokenPayload } from './entities/user-refresh-payload.entity';
 import { UserPayload } from './entities/user-payload.entity';
 import { AccessTokenGuard } from './guards/access-token.guard';
+import { ResetPasswordTokenGuard } from './guards/reset-password-token.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -55,12 +56,14 @@ export class AuthController {
     return this.authService.forgotPassword(forgotPasswordDto.email);
   }
 
+  @UseGuards(ResetPasswordTokenGuard)
   @HttpCode(HttpStatus.OK)
   @Post('reset-password')
-  resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
-    return this.authService.resetPassword(
-      resetPasswordDto.token,
-      resetPasswordDto.newPassword,
-    );
+  resetPassword(
+    @CurrentUser() { id: userId }: UserPayload,
+    @Body() { newPassword }: ResetPasswordDto,
+  ) {
+    console.log(userId, newPassword);
+    return this.authService.resetPassword(userId, newPassword);
   }
 }
