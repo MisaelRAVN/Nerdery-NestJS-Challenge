@@ -17,6 +17,7 @@ import { CurrentUser } from './decorators/current-user.decorator';
 import { UserWithRefreshTokenPayload } from './entities/user-refresh-payload.entity';
 import { UserPayload } from './entities/user-payload.entity';
 import { AccessTokenGuard } from './guards/access-token.guard';
+import { ThrottlerGuard } from '@nestjs/throttler';
 
 @Controller('auth')
 export class AuthController {
@@ -49,12 +50,14 @@ export class AuthController {
     return this.authService.getNewTokens(userId, refreshToken);
   }
 
+  @UseGuards(ThrottlerGuard)
   @HttpCode(HttpStatus.OK)
   @Post('forgot-password')
   forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
     return this.authService.forgotPassword(forgotPasswordDto.email);
   }
 
+  @UseGuards(ThrottlerGuard)
   @HttpCode(HttpStatus.OK)
   @Post('reset-password')
   resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {

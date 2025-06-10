@@ -14,6 +14,7 @@ import { PaymentsModule } from './payments/payments.module';
 import { ImagesModule } from './images/images.module';
 import { CategoriesModule } from './categories/categories.module';
 import { validationSchema } from './utils/joi-validation-schema';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -25,6 +26,9 @@ import { validationSchema } from './utils/joi-validation-schema';
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
+    }),
+    ThrottlerModule.forRoot({
+      throttlers: [{ ttl: 600000, limit: 5 }],
     }),
     StripeModule.forRootAsync(),
     ProductsModule,
