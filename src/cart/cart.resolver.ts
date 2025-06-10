@@ -1,5 +1,15 @@
 import { ParseUUIDPipe, UseGuards } from '@nestjs/common';
-import { Args, ID, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Float,
+  ID,
+  Int,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from '@nestjs/graphql';
 import { CartService } from './services/cart.service';
 import { Cart } from './entities/cart.entity';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
@@ -9,7 +19,7 @@ import { ClientPayload } from 'src/auth/entities/client-payload.entity';
 import { AccessTokenGuard } from 'src/auth/guards/access-token.guard';
 
 @UseGuards(AccessTokenGuard)
-@Resolver()
+@Resolver(() => Cart)
 export class CartResolver {
   constructor(private cartService: CartService) {}
 
@@ -42,5 +52,13 @@ export class CartResolver {
   @Mutation(() => Cart)
   async clearCart(@CurrentUser() user: ClientPayload) {
     return this.cartService.clearCart(user);
+  }
+
+  @ResolveField('totalAmount', () => Float)
+  getTotalAmount(@Parent() cart: Cart) {
+    const totalAmount = cart.items.reduce((acc, curr) => {
+      return acc + curr.quantity * curr.product.price;
+    }, 0);
+    return totalAmount;
   }
 }
